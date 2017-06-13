@@ -1,15 +1,10 @@
-{application, rlp,
- [{description, "RLP serialization library"},
-  {vsn, "1.0.0"},
-  {registered, []},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
-  {env,[]},
-  {modules, []},
-
-  {maintainers, ["paulperegud@gmail.com"]},
-  {licenses, ["MIT"]},
-  {links, [{"Github", "https://github.com/paulperegud/rlp"}]}
- ]}.
+{application,rlp,
+             [{description,"RLP serialization library"},
+              {vsn,"1.0.1"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[]},
+              {maintainers,["paulperegud@gmail.com"]},
+              {licenses,["MIT"]},
+              {links,[{"Github","https://github.com/paulperegud/erlp"}]}]}.
