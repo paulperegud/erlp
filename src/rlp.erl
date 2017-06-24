@@ -7,7 +7,7 @@
 -export([encode_length/2, decode_length/2]).
 
 -type value() :: binary().
--type llist() :: list(llist()) | value().
+-type rlist() :: list(rlist()) | value().
 
 -type bytel() :: pos_integer().
 -type length() :: pos_integer().
@@ -18,12 +18,12 @@
 %% API functions
 %%====================================================================
 
--spec encode(llist()) -> rlp().
+-spec encode(rlist()) -> rlp().
 encode(X) ->
     {_Length, Result} = encode_wl(X),
     Result.
 
--spec decode(rlp()) -> llist().
+-spec decode(rlp()) -> rlist().
 decode(Binary) when is_binary(Binary) ->
     case decode_partial(Binary) of
         {_, Value, <<>>} ->
@@ -36,7 +36,7 @@ decode(Binary) when is_binary(Binary) ->
 %% Internal functions
 %%====================================================================
 
--spec encode_wl(llist()) -> {bytel(), rlp()}.
+-spec encode_wl(rlist()) -> {bytel(), rlp()}.
 encode_wl(List) when is_list(List) ->
     encode_list(List);
 encode_wl(Value) when is_binary(Value) ->
@@ -77,7 +77,7 @@ decode_length(<<Byte:8/big-unsigned-integer, LEnc/binary>>, Offset) ->
     <<Len:SizeLen/big-unsigned-integer-unit:8, Rest/binary>> = LEnc,
     {SizeLen+1, Len, Rest}.
 
--spec decode_partial(binary()) -> {bytel(), llist(), Rest::binary()}.
+-spec decode_partial(binary()) -> {bytel(), rlist(), Rest::binary()}.
 decode_partial(<<128, Rest/binary>>) ->
     {1, <<>>, Rest};
 decode_partial(<<X:8/big-unsigned-integer, Rest/binary>>) when X < 128 ->
