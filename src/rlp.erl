@@ -75,7 +75,9 @@ decode_length(<<Data:8/big-unsigned-integer, Rest/binary>>, Offset) when Data < 
 decode_length(<<Byte:8/big-unsigned-integer, LEnc/binary>>, Offset) ->
     SizeLen = Byte - Offset - 55,
     <<Len:SizeLen/big-unsigned-integer-unit:8, Rest/binary>> = LEnc,
-    {SizeLen+1, Len, Rest}.
+    {SizeLen+1, Len, Rest};
+decode_length(_, _) ->
+    error(encoding_of_length_is_too_short).
 
 -spec decode_partial(binary()) -> {bytel(), rlist(), Rest::binary()}.
 decode_partial(<<128, Rest/binary>>) ->
@@ -84,8 +86,12 @@ decode_partial(<<X:8/big-unsigned-integer, Rest/binary>>) when X < 128 ->
     {1, <<X>>, Rest};
 decode_partial(<<X:8/big-unsigned-integer, _/binary>> = Binary) when X =< 182 ->
     {SizeLen, DataLen, Tail} = decode_length(Binary, 128),
-    <<Data:DataLen/binary, Rest/binary>> = Tail,
-    {SizeLen + DataLen, Data, Rest};
+    case Tail of
+        <<Data:DataLen/binary, Rest/binary>> ->
+            {SizeLen + DataLen, Data, Rest};
+        _ ->
+            error(encoding_of_value_is_too_short)
+    end;
 decode_partial(<<_/binary>> = Binary) ->
     {SizeLen, BytesNo, Tail} = decode_length(Binary, 192),
     {Items, Tail2}  = loop_decode_list(Tail, BytesNo, []),
