@@ -32,3 +32,16 @@ prop_list() ->
                 Decoded = decode(Encoded),
                 L =:= Decoded
             end).
+
+prop_decode() ->
+    ?FORALL(E, binary(),
+            begin
+                try decode(E) of
+                    L -> E =:= encode(L)
+                catch
+                    error:{trailing_data, _} -> true;
+                    error:encoding_of_value_is_too_short -> true;
+                    error:encoding_of_length_is_too_short -> true;
+                    error:{badmatch, _} -> true
+                end
+            end).
